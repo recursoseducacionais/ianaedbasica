@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia — IA na Educação Básica (MEC, 2026)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --sidebar-bg: #0f2544;
+    --sidebar-text: #b8cde0;
+    --sidebar-active: #38bdf8;
+    --sidebar-hover: #162f56;
+    --accent:  #0070c0;
+    --accent2: #f5a623;
+    --accent3: #10b981;
+    --accent4: #ef4444;
+    --text: #1a1a2e;
+    --text-light: #4a5568;
+    --card-bg: #ffffff;
+    --doc-bg: #eef4fb;
+    --doc-border: #90c1e8;
+    --tip-bg: #ecfdf5;
+    --tip-border: #10b981;
+    --warn-bg: #fffbeb;
+    --warn-border: #f5a623;
+    --danger-bg: #fef2f2;
+    --danger-border: #ef4444;
+    --info-bg: #eff6ff;
+    --info-border: #0070c0;
+    --sidebar-width: 275px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-header {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .sidebar-badge {
+    display: inline-block;
+    background: var(--accent2);
+    color: #0f2544;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-title {
+    font-family: 'Playfair Display', serif;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .sidebar-subtitle {
+    color: var(--sidebar-text);
+    font-size: 11.5px;
+    margin-top: 6px;
+    opacity: 0.75;
+    font-style: italic;
+  }
+
+  .nav-section-label {
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 18px 20px 6px;
+    opacity: 0.85;
+  }
+
+  nav a {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    border-left: 3px solid transparent;
+  }
+
+  nav a:hover { background: var(--sidebar-hover); color: #fff; }
+
+  nav a.active {
+    background: rgba(56,189,248,0.12);
+    color: #fff;
+    border-left-color: var(--sidebar-active);
+    font-weight: 600;
+  }
+
+  .nav-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 18px 20px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: var(--sidebar-text);
+    font-size: 11px;
+    opacity: 0.6;
+    line-height: 1.5;
+  }
+
+  /* ── MAIN ── */
+  #main { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; }
+
+  .top-bar {
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .top-bar-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    animation: blink 2.5s infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .content { padding: 48px 40px 80px; max-width: 880px; }
+
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── TYPOGRAPHY ── */
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: var(--sidebar-bg);
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--sidebar-bg);
+    margin: 36px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent2);
+  }
+
+  h3 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 24px 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  p { font-size: 16px; line-height: 1.78; margin-bottom: 14px; color: #2a2a3e; }
+
+  .lead {
+    font-size: 18px;
+    color: var(--text-light);
+    font-style: italic;
+    margin-bottom: 28px;
+    line-height: 1.7;
+  }
+
+  .article-tag {
+    display: inline-block;
+    background: var(--sidebar-bg);
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── DOC BOX (equivalent of law-box) ── */
+  .doc-box {
+    background: var(--doc-bg);
+    border: 1px solid var(--doc-border);
+    border-left: 5px solid var(--accent);
+    border-radius: 6px;
+    padding: 22px 24px;
+    margin: 20px 0 24px;
+    position: relative;
+  }
+
+  .doc-box::before {
+    content: attr(data-label);
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #1a6aad;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .doc-box p {
+    font-style: italic;
+    font-size: 15.5px;
+    color: #1e3a5f;
+    line-height: 1.8;
+    margin-bottom: 8px;
+  }
+
+  .doc-box p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUT BOXES ── */
+  .tip-box, .warn-box, .danger-box, .info-box {
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .tip-box { background: var(--tip-bg); border-left: 5px solid var(--tip-border); }
+  .warn-box { background: var(--warn-bg); border-left: 5px solid var(--warn-border); }
+  .danger-box { background: var(--danger-bg); border-left: 5px solid var(--danger-border); }
+  .info-box { background: var(--info-bg); border-left: 5px solid var(--info-border); }
+
+  .box-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .tip-box .box-label { color: #059669; }
+  .warn-box .box-label { color: #d97706; }
+  .danger-box .box-label { color: #dc2626; }
+  .info-box .box-label { color: #0070c0; }
+
+  /* ── CARDS ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid #dde4ee;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+  .card-icon { font-size: 26px; margin-bottom: 10px; display: block; }
+  .card-title { font-weight: 600; font-size: 14px; color: var(--sidebar-bg); margin-bottom: 6px; }
+  .card p { font-size: 13.5px; color: var(--text-light); margin: 0; line-height: 1.5; }
+
+  /* ── PILLAR CARDS ── */
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .pillar-card {
+    background: var(--card-bg);
+    border: 1px solid #dde4ee;
+    border-radius: 10px;
+    padding: 24px;
+    border-top: 4px solid var(--accent);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .pillar-card:nth-child(2) { border-top-color: var(--accent2); }
+  .pillar-card:nth-child(3) { border-top-color: var(--accent3); }
+  .pillar-card:nth-child(4) { border-top-color: #8b5cf6; }
+
+  .pillar-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+  .pillar-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .pillar-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--sidebar-bg); margin-bottom: 10px; }
+  .pillar-card p { font-size: 14px; color: var(--text-light); line-height: 1.6; margin: 0; }
+
+  /* ── PRINCIPLE ITEMS ── */
+  .principle-item {
+    background: var(--card-bg);
+    border: 1px solid #dde4ee;
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: box-shadow 0.2s;
+  }
+
+  .principle-item:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.07); }
+
+  .principle-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    background: var(--accent);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .principle-title { font-weight: 600; font-size: 15px; color: var(--sidebar-bg); margin-bottom: 6px; }
+  .principle-item p { font-size: 14px; color: var(--text-light); line-height: 1.6; margin: 0; }
+
+  /* ── RISK TABLE ── */
+  .risk-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+  .risk-table th {
+    background: var(--sidebar-bg);
+    color: #fff;
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .risk-table td { padding: 12px 16px; border-bottom: 1px solid #dde4ee; vertical-align: top; line-height: 1.6; }
+  .risk-table tr:hover td { background: #f8faff; }
+
+  .badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .badge-green  { background: #d1fae5; color: #065f46; }
+  .badge-yellow { background: #fef3c7; color: #92400e; }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+  .badge-black  { background: #1e293b; color: #f1f5f9; }
+  .badge-blue   { background: #dbeafe; color: #1e40af; }
+
+  /* ── STAGE SECTION ── */
+  .stage-card {
+    background: var(--card-bg);
+    border: 1px solid #dde4ee;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  .stage-header {
+    padding: 16px 22px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .stage-header:hover { background: #f0f4fa; }
+  .stage-header-left { display: flex; gap: 14px; align-items: center; }
+  .stage-icon { font-size: 22px; }
+  .stage-name { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--sidebar-bg); font-weight: 600; }
+  .stage-sub { font-size: 12px; color: var(--text-light); font-style: italic; margin-top: 2px; }
+  .stage-arrow { transition: transform 0.25s; font-size: 12px; color: var(--accent2); }
+  .stage-card.open .stage-arrow { transform: rotate(180deg); }
+
+  .stage-body {
+    display: none;
+    padding: 20px 22px 24px;
+    border-top: 1px solid #dde4ee;
+    background: #fafbff;
+  }
+
+  .stage-card.open .stage-body { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ── FAQ ── */
+  .faq-item { border: 1px solid #dde4ee; border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
+  .faq-question {
+    background: var(--card-bg);
+    padding: 16px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+    user-select: none;
+  }
+  .faq-question:hover { background: #f0f4fa; }
+  .faq-arrow { transition: transform 0.25s; font-size: 12px; color: var(--accent2); }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-answer {
+    display: none;
+    padding: 16px 20px;
+    background: #fafbff;
+    border-top: 1px solid #dde4ee;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .faq-item.open .faq-answer { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0f2544 0%, #1a3a6e 60%, #0f4c8a 100%);
+    color: #fff;
+    padding: 48px 40px;
+    margin: -48px -40px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "IA";
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 220px;
+    color: rgba(255,255,255,0.035);
+    font-weight: 700;
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--accent2);
+    color: #0f2544;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 3px;
+    margin-bottom: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 { color: #fff; font-size: 32px; margin-bottom: 12px; }
+  .hero .lead { color: rgba(255,255,255,0.76); margin-bottom: 0; }
+
+  .hero-meta { margin-top: 24px; display: flex; gap: 24px; flex-wrap: wrap; }
+
+  .hero-meta-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hero-meta-item strong { color: var(--accent2); font-weight: 500; }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+  th {
+    background: var(--sidebar-bg);
+    color: #fff;
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  td { padding: 12px 16px; border-bottom: 1px solid #dde4ee; vertical-align: top; line-height: 1.6; }
+  tr:nth-child(even) td { background: #f8faff; }
+
+  /* ── ORDERED LIST ── */
+  ol.styled {
+    counter-reset: item;
+    list-style: none;
+    margin: 20px 0;
+  }
+
+  ol.styled li {
+    counter-increment: item;
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e8edf5;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  ol.styled li:last-child { border-bottom: none; }
+
+  ol.styled li::before {
+    content: counter(item, decimal-leading-zero);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #fff;
+    background: var(--accent);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* ── LAW LIST ── */
+  ul.law-list { list-style: none; margin: 14px 0; }
+  ul.law-list li { padding: 6px 0 6px 22px; position: relative; font-size: 15px; line-height: 1.65; border-bottom: 1px solid #edf0f5; }
+  ul.law-list li:last-child { border-bottom: none; }
+  ul.law-list li::before { content: "▸"; position: absolute; left: 0; color: var(--accent); font-size: 12px; top: 9px; }
+
+  /* ── PROHIBITED LIST ── */
+  ul.prohib-list { list-style: none; margin: 14px 0; }
+  ul.prohib-list li { padding: 8px 0 8px 28px; position: relative; font-size: 15px; line-height: 1.65; border-bottom: 1px solid #edf0f5; }
+  ul.prohib-list li:last-child { border-bottom: none; }
+  ul.prohib-list li::before { content: "✕"; position: absolute; left: 0; color: #dc2626; font-size: 13px; font-weight: 700; top: 10px; }
+
+  /* ── HIGHLIGHT TAG ── */
+  .emphasis {
+    background: linear-gradient(120deg, rgba(245,166,35,0.22) 0%, rgba(245,166,35,0.1) 100%);
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+
+  .divider { border: none; border-top: 2px dashed #dde4ee; margin: 36px 0; }
+
+  strong { color: var(--sidebar-bg); }
+
+  /* ── MOBILE TOGGLE ── */
+  #menu-toggle {
+    display: none;
+    position: fixed;
+    top: 12px; left: 12px;
+    z-index: 200;
+    background: var(--sidebar-bg);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    :root { --sidebar-width: 265px; }
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    .content { padding: 60px 20px 60px; }
+    .hero { margin: -60px -20px 32px; padding: 60px 20px 32px; }
+    h1 { font-size: 26px; }
+    .hero h1 { font-size: 22px; }
+    .card-grid, .pillar-grid { grid-template-columns: 1fr; }
+    #menu-toggle { display: block; }
+  }
+
+  @media print {
+    #sidebar, #menu-toggle, .top-bar { display: none; }
+    #main { margin-left: 0; }
+    .section { display: block !important; }
+  }
+
+  /* ── COURSE BOX ── */
+  .course-box {
+    background: linear-gradient(135deg, #0f2544, #0f4c8a);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 24px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .course-box::after {
+    content: "AVAMEC";
+    position: absolute;
+    right: -8px; bottom: -14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 64px;
+    color: rgba(255,255,255,0.06);
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .course-badge {
+    display: inline-block;
+    background: var(--accent2);
+    color: #0f2544;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .course-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #fff; margin-bottom: 10px; }
+  .course-box p { color: rgba(255,255,255,0.78); font-size: 14.5px; line-height: 1.7; margin-bottom: 10px; }
+  .course-box p:last-child { margin-bottom: 0; }
+  .course-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 16px; }
+  .course-meta-item { font-family: 'DM Mono', monospace; font-size: 11.5px; color: rgba(255,255,255,0.6); }
+  .course-meta-item strong { color: var(--accent2); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-badge">MEC · 2026</div>
+    <div class="sidebar-title">IA na Educação Básica</div>
+    <div class="sidebar-subtitle">Caminhos para o Currículo e a Prática Docente</div>
+  </div>
+
+  <div class="nav-section-label">Início</div>
+  <nav>
+    <a onclick="show('apresentacao')" class="active">
+      <span class="nav-icon">🏠</span> Apresentação
+    </a>
+    <a onclick="show('visao-geral')">
+      <span class="nav-icon">🗺️</span> Visão Geral do Documento
+    </a>
+  </nav>
+
+  <div class="nav-section-label">Conteúdo Central</div>
+  <nav>
+    <a onclick="show('pilares')">
+      <span class="nav-icon">🏛️</span> Os Quatro Pilares
+    </a>
+    <a onclick="show('principios')">
+      <span class="nav-icon">⚖️</span> Princípios Fundamentais
+    </a>
+    <a onclick="show('recomendacoes')">
+      <span class="nav-icon">📋</span> 10 Recomendações para Gestores
+    </a>
+    <a onclick="show('etapas')">
+      <span class="nav-icon">🎓</span> Por Etapa de Ensino
+    </a>
+    <a onclick="show('risco')">
+      <span class="nav-icon">🚦</span> Classificação de Risco da IA
+    </a>
+  </nav>
+
+  <div class="nav-section-label">Contexto e Ação</div>
+  <nav>
+    <a onclick="show('marco-legal')">
+      <span class="nav-icon">📜</span> Marco Legal
+    </a>
+    <a onclick="show('formacao')">
+      <span class="nav-icon">🎯</span> Formação Docente
+    </a>
+    <a onclick="show('faq')">
+      <span class="nav-icon">❓</span> Perguntas Frequentes
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    Documento: MEC / SEGAPE<br>
+    Lançamento: 8 de abril de 2026<br><br>
+    Elaborado para professores e gestores<br>da Educação Básica brasileira.
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+  <div class="top-bar">
+    <div class="top-bar-dot"></div>
+    MEC — Inteligência Artificial na Educação Básica · Lançado em 8 de abril de 2026 · Abrangência: toda a Educação Básica brasileira
+  </div>
+
+  <div class="content">
+
+    <!-- ═══════════════════════════════════════ APRESENTAÇÃO -->
+    <section id="apresentacao" class="section active">
+      <div class="hero">
+        <div class="hero-tag">🤖 Guia para Educadores</div>
+        <h1>IA na Educação Básica<br>Caminhos para o Currículo e a Prática Docente</h1>
+        <p class="lead">Um guia prático e comentado do documento orientador do MEC lançado em abril de 2026 — para professores e gestores entenderem o que muda, o que é permitido e como agir com responsabilidade diante da Inteligência Artificial na escola.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">📅 <strong>Publicação:</strong> 8 abr. 2026</div>
+          <div class="hero-meta-item">🏛️ <strong>Órgão:</strong> MEC / SEGAPE</div>
+          <div class="hero-meta-item">🏫 <strong>Abrangência:</strong> toda a Ed. Básica</div>
+          <div class="hero-meta-item">🌐 <strong>Parceria:</strong> UNESCO</div>
+        </div>
+      </div>
+
+      <h2>Sobre este Guia</h2>
+      <p>O Ministério da Educação lançou em 2026 o primeiro documento orientador nacional sobre Inteligência Artificial na Educação Básica. O texto é denso, técnico e extenso — mas suas diretrizes afetam diretamente o dia a dia de professores, coordenadores e gestores escolares em todo o Brasil.</p>
+      <p>Este guia foi criado para facilitar a leitura e a compreensão desse documento. Cada seção apresenta o <strong>conteúdo essencial</strong> com comentários práticos, organizados para uma consulta rápida no cotidiano escolar.</p>
+
+      <div class="tip-box">
+        <span class="box-label">💡 Como usar este guia</span>
+        Use o menu lateral para navegar entre as seções. Comece pela <strong>Visão Geral</strong> para ter o panorama completo, vá em <strong>Por Etapa de Ensino</strong> para orientações específicas ao seu nível de atuação, e consulte a <strong>Classificação de Risco</strong> antes de adotar qualquer ferramenta de IA na escola.
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <span class="card-icon">🏛️</span>
+          <div class="card-title">4 Pilares</div>
+          <p>Compreensão crítica, uso pedagógico intencional, proteção de direitos e formação docente.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">⚖️</span>
+          <div class="card-title">7 Princípios</div>
+          <p>Centralidade humana, transparência, proteção de dados, valorização docente e mais.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🚦</span>
+          <div class="card-title">Classificação de Risco</div>
+          <p>Quatro níveis para orientar a adoção de qualquer ferramenta de IA na escola.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🎓</span>
+          <div class="card-title">Por Etapa</div>
+          <p>Orientações específicas da Ed. Infantil ao Ensino Médio, com o que é adequado em cada fase.</p>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <span class="box-label">⚠️ Atenção</span>
+        Este guia tem finalidade educativa e orientadora. O documento original do MEC é a fonte oficial. Em caso de dúvidas sobre adoção de tecnologias, consulte a sua secretaria de educação ou a assessoria técnica pedagógica da rede.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ VISÃO GERAL -->
+    <section id="visao-geral" class="section">
+      <div class="article-tag">📋 Visão Geral</div>
+      <h1>O que o documento determina?</h1>
+      <p class="lead">Uma síntese estruturada de todo o conteúdo, pensada para uma leitura rápida antes de uma reunião pedagógica ou formação de professores.</p>
+
+      <h2>O que é este documento?</h2>
+      <p>Intitulado <strong>"Inteligência Artificial na Educação Básica: Caminhos para o Currículo e a Prática Docente"</strong>, o documento foi lançado pelo MEC em 8 de abril de 2026, via SEGAPE — Secretaria de Gestão da Informação, Inovação e Avaliação de Políticas Educacionais. Ele foi desenvolvido em parceria com a UNESCO e resulta de um amplo processo de consulta a especialistas, redes de ensino e organismos internacionais.</p>
+
+      <p>O documento <strong>não é uma lei</strong>, mas sim um <span class="emphasis">referencial orientador nacional</span> — um conjunto de princípios, diretrizes e recomendações que devem guiar as decisões de gestores, professores e redes de ensino sobre o uso de IA nas escolas.</p>
+
+      <div class="doc-box" data-label="§ Eixo estruturante do documento">
+        <p>A articulação entre <strong>ensinar SOBRE IA</strong> — para que estudantes compreendam criticamente como ela funciona e que impactos ela gera — e <strong>ensinar COM IA</strong> — usando-a como ferramenta pedagógica intencional e responsável — é o fio condutor de todo o documento.</p>
+      </div>
+
+      <h2>Estrutura do Documento</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Seção</th>
+            <th>Tema Central</th>
+            <th>O que importa para o professor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Cap. 1</strong></td>
+            <td>Fundamentos da IA</td>
+            <td>O que é IA, conceitos básicos e contexto educacional</td>
+          </tr>
+          <tr>
+            <td><strong>Cap. 2</strong></td>
+            <td>Princípios e boas práticas</td>
+            <td>Os 7 princípios orientadores e oportunidades vs. riscos</td>
+          </tr>
+          <tr>
+            <td><strong>Cap. 3</strong></td>
+            <td>Proteção de dados e legislação</td>
+            <td>LGPD e ECA Digital — responsabilidades da escola</td>
+          </tr>
+          <tr>
+            <td><strong>Cap. 4</strong></td>
+            <td>Formação de professores</td>
+            <td>Protagonismo docente e integração curricular</td>
+          </tr>
+          <tr>
+            <td><strong>Cap. 5</strong></td>
+            <td>Implementação prática</td>
+            <td>Caminhos concretos para redes e unidades escolares</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Dados do Contexto Educacional Brasileiro</h2>
+      <div class="card-grid">
+        <div class="card">
+          <span class="card-icon">🖥️</span>
+          <div class="card-title">56%</div>
+          <p>dos professores brasileiros já usam alguma ferramenta de IA no trabalho.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📚</span>
+          <div class="card-title">64%</div>
+          <p>desses professores afirmam não ter competências para um uso pedagógico responsável.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🌐</span>
+          <div class="card-title">71,7%</div>
+          <p>das escolas brasileiras têm acesso adequado à internet.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🏫</span>
+          <div class="card-title">28%</div>
+          <p>das escolas possuem laboratórios de informática ativos e funcionais.</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="box-label">📌 Obrigatoriedade a partir de 2026</span>
+        Pela Resolução CNE/CEB 2 (março de 2025), a <strong>educação digital e midiática</strong> torna-se obrigatória em todos os currículos da Educação Básica — da Ed. Infantil ao Ensino Médio — a partir de 2026. O documento do MEC orienta como cumprir essa determinação no que se refere à IA.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ PILARES -->
+    <section id="pilares" class="section">
+      <div class="article-tag">🏛️ Fundamentos</div>
+      <h1>Os Quatro Pilares</h1>
+      <p class="lead">Toda a estrutura do documento repousa sobre quatro pilares indissociáveis. Compreendê-los é o primeiro passo para aplicar as orientações do MEC na prática.</p>
+
+      <div class="pillar-grid">
+        <div class="pillar-card">
+          <div class="pillar-num">Pilar 01</div>
+          <div class="pillar-title">Compreensão Crítica da IA</div>
+          <p>Estudantes e professores precisam entender como a IA funciona, quais vieses ela pode conter, como seus dados são usados e que impactos ela gera na sociedade — antes de simplesmente utilizá-la.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">Pilar 02</div>
+          <div class="pillar-title">Uso Pedagógico Intencional</div>
+          <p>A IA pode e deve ser usada como recurso didático — mas sempre com objetivo pedagógico claro, escolha consciente da ferramenta e supervisão ativa do professor. Usar por usar não é suficiente.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">Pilar 03</div>
+          <div class="pillar-title">Proteção de Direitos e Bem-Estar</div>
+          <p>O uso de IA na escola deve ser guiado pela proteção dos dados, da privacidade e do desenvolvimento integral dos estudantes, com observância rigorosa da LGPD e do ECA Digital.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">Pilar 04</div>
+          <div class="pillar-title">Desenvolvimento Profissional Docente</div>
+          <p>O professor é protagonista — não espectador — da integração da IA na escola. O documento reforça que decisões sobre tecnologias educacionais devem ser centradas no saber e no julgamento docente.</p>
+        </div>
+      </div>
+
+      <div class="doc-box" data-label="§ Princípio central">
+        <p>"A Inteligência Artificial é um recurso auxiliar. O julgamento pedagógico, a mediação humana e a autonomia do professor permanecem insubstituíveis em qualquer processo de ensino e aprendizagem."</p>
+      </div>
+
+      <h2>Ensinar SOBRE IA vs. Ensinar COM IA</h2>
+      <p>Essa distinção é um dos pontos mais importantes do documento e aparece em todos os capítulos:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Dimensão</th>
+            <th>Foco</th>
+            <th>Exemplos práticos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Ensinar SOBRE IA</strong></td>
+            <td>Compreensão crítica de como a IA funciona, seus vieses, impactos éticos e sociais</td>
+            <td>Aulas sobre algoritmos; análise de recomendações de redes sociais; debate sobre deepfakes</td>
+          </tr>
+          <tr>
+            <td><strong>Ensinar COM IA</strong></td>
+            <td>Uso intencional de ferramentas de IA como recurso didático para melhorar o aprendizado</td>
+            <td>Assistente de escrita com supervisão docente; tutores virtuais institucionais; ferramenta de feedback em redações</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <span class="box-label">⚠️ Atenção do documento</span>
+        O documento alerta que <strong>todo uso de IA deve ser acompanhado de ensino SOBRE IA</strong>. Adotar uma ferramenta sem que os estudantes entendam como ela funciona e que limitações ela tem é uma prática incompleta e potencialmente prejudicial ao desenvolvimento do pensamento crítico.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ PRINCÍPIOS -->
+    <section id="principios" class="section">
+      <div class="article-tag">⚖️ Ética e Valores</div>
+      <h1>Os Sete Princípios Fundamentais</h1>
+      <p class="lead">O documento estabelece sete princípios que devem orientar qualquer decisão sobre o uso de IA nas escolas — desde a escolha de uma ferramenta até a elaboração de políticas pedagógicas na rede de ensino.</p>
+
+      <div class="principle-item">
+        <div class="principle-num">1</div>
+        <div>
+          <div class="principle-title">Centralidade Humana</div>
+          <p>A IA é sempre um recurso auxiliar. O julgamento pedagógico, a mediação e a autonomia do professor permanecem insubstituíveis. Qualquer decisão de aprendizagem deve ser tomada ou validada por um ser humano.</p>
+        </div>
+      </div>
+
+      <div class="principle-item">
+        <div class="principle-num">2</div>
+        <div>
+          <div class="principle-title">Supervisão Humana Efetiva</div>
+          <p>Todo processo educacional que envolva IA exige supervisão humana ativa — não apenas formal. O professor deve acompanhar, questionar e avaliar o que a ferramenta produz, nunca delegando sua função crítica à máquina.</p>
+        </div>
+      </div>
+
+      <div class="principle-item">
+        <div class="principle-num">3</div>
+        <div>
+          <div class="principle-title">Transparência e Explicabilidade</div>
+          <p>Os sistemas de IA adotados na escola devem ser transparentes: a escola e os professores precisam entender — ao menos em linhas gerais — como a ferramenta funciona, que dados ela usa e como chega às suas respostas.</p>
+        </div>
+      </div>
+
+      <div class="principle-item">
+        <div class="principle-num">4</div>
+        <div>
+          <div class="principle-title">Proteção de Dados e Privacidade</div>
+          <p>Todas as decisões sobre IA devem observar rigorosamente a LGPD (Lei 13.709/2018) e o ECA Digital (Lei 15.211/2025). Dados de estudantes — especialmente menores — são sensíveis e merecem proteção máxima.</p>
+        </div>
+      </div>
+
+      <div class="principle-item">
+        <div class="principle-num">5</div>
+        <div>
+          <div class="principle-title">Valorização do Trabalho Docente</div>
+          <p>O professor deve ser o centro das decisões sobre adoção de IA — não um executor de tecnologias escolhidas por gestores ou empresas. A escola que ignora o saber docente cria resistência e perde qualidade.</p>
+        </div>
+      </div>
+
+      <div class="principle-item">
+        <div class="principle-num">6</div>
+        <div>
+          <div class="principle-title">Salvaguardas de Aprendizagem</div>
+          <p>O uso de IA deve evitar o <strong>"descarregamento cognitivo"</strong> — quando o estudante delega à máquina tarefas que deveriam desenvolver seu próprio pensamento. A IA deve estimular, não substituir, a criatividade, o raciocínio e a autonomia do estudante.</p>
+        </div>
+      </div>
+
+      <div class="principle-item">
+        <div class="principle-num">7</div>
+        <div>
+          <div class="principle-title">Inovação Colaborativa e Soberania Digital</div>
+          <p>O documento estimula o uso de ecossistemas abertos, colaborativos e comprometidos com o interesse público, em detrimento de soluções proprietárias que criam dependência tecnológica nas redes de ensino.</p>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="info-box">
+        <span class="box-label">📌 Para levar à próxima reunião pedagógica</span>
+        Esses sete princípios são a <strong>bússola ética</strong> do documento. Antes de adotar qualquer ferramenta de IA na escola — seja um chatbot, um corretor automático ou um sistema de monitoramento — pergunte: esta ferramenta respeita esses sete princípios?
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ RECOMENDAÇÕES -->
+    <section id="recomendacoes" class="section">
+      <div class="article-tag">📋 Para a Gestão Escolar</div>
+      <h1>10 Recomendações para Gestores</h1>
+      <p class="lead">O documento apresenta dez recomendações concretas endereçadas a diretores, coordenadores e secretarias de educação para implementar as diretrizes de forma responsável.</p>
+
+      <ol class="styled">
+        <li>
+          <div><strong>Todo uso de IA deve ser acompanhado de ensino SOBRE IA.</strong> Não basta adotar uma ferramenta — é preciso que estudantes e professores entendam como ela funciona, que limites ela tem e que impactos ela pode gerar.</div>
+        </li>
+        <li>
+          <div><strong>Alinhar as aprendizagens de IA à BNCC</strong> com objetivos pedagógicos claros por etapa de ensino, articulados à Competência Geral 5 (Cultura Digital) e às áreas do conhecimento.</div>
+        </li>
+        <li>
+          <div><strong>Estruturar decisões de adoção considerando pedagogia, equidade e contexto local.</strong> Uma ferramenta que funciona em escola privada com laboratório completo pode ser inadequada para uma escola pública rural com acesso limitado à internet.</div>
+        </li>
+        <li>
+          <div><strong>Estabelecer avaliação prévia e monitoramento contínuo</strong> com indicadores claros de impacto pedagógico e de proteção de dados antes de qualquer implantação em escala.</div>
+        </li>
+        <li>
+          <div><strong>Implementar formação docente baseada em diagnóstico</strong> — não em pacotes genéricos. A formação deve partir do que o professor já sabe, do contexto da escola e das ferramentas efetivamente disponíveis.</div>
+        </li>
+        <li>
+          <div><strong>Criar espaços de escuta docente</strong> e reconhecer o professor como central nas decisões sobre IA. Políticas impostas de cima para baixo tendem a falhar; políticas construídas com os professores tendem a durar.</div>
+        </li>
+        <li>
+          <div><strong>Engajar estudantes, famílias e a comunidade</strong> com transparência e responsabilidade compartilhada sobre o uso de IA na escola, especialmente quanto à coleta e uso de dados.</div>
+        </li>
+        <li>
+          <div><strong>Garantir cumprimento rigoroso da LGPD e do ECA Digital</strong> — verificando os termos de uso de cada plataforma adotada, as classificações indicativas de conteúdo e as garantias contratuais de proteção de dados de menores.</div>
+        </li>
+        <li>
+          <div><strong>Institucionalizar ciclos contínuos de revisão</strong> baseados em evidências e mudanças regulatórias. O campo da IA evolui rapidamente — as políticas escolares precisam ser revisadas periodicamente.</div>
+        </li>
+        <li>
+          <div><strong>Apoiar experimentos éticos, pedagógicos e criativos com IA</strong> dentro da escola — garantindo que professores possam testar, errar e aprender com segurança, sem punição pelo risco inerente à inovação responsável.</div>
+        </li>
+      </ol>
+
+      <div class="tip-box">
+        <span class="box-label">💡 Como usar estas recomendações</span>
+        O documento não exige que tudo seja feito ao mesmo tempo. Uma boa estratégia é começar pelas recomendações 1, 5 e 6 — ensinar sobre IA, formar professores e ouvi-los — antes de partir para implantações tecnológicas em escala.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ ETAPAS -->
+    <section id="etapas" class="section">
+      <div class="article-tag">🎓 Orientações Curriculares</div>
+      <h1>Por Etapa de Ensino</h1>
+      <p class="lead">O documento reconhece que crianças e adolescentes em diferentes fases de desenvolvimento têm necessidades e riscos distintos diante da IA. Por isso, as orientações variam conforme a etapa escolar.</p>
+
+      <div class="info-box">
+        <span class="box-label">📌 Princípio geral</span>
+        Quanto mais nova a criança, <strong>maior a prioridade às experiências presenciais, humanas e "desplugadas"</strong> — e menor a exposição a ferramentas de IA. À medida que o estudante avança, a abordagem pode ser progressivamente mais técnica, analítica e prática.
+      </div>
+
+      <!-- Infantil -->
+      <div class="stage-card" id="stage-infantil">
+        <div class="stage-header" onclick="toggleStage('stage-infantil')">
+          <div class="stage-header-left">
+            <span class="stage-icon">🌱</span>
+            <div>
+              <div class="stage-name">Educação Infantil</div>
+              <div class="stage-sub">Creche (0–3 anos) e Pré-escola (4–5 anos)</div>
+            </div>
+          </div>
+          <span class="stage-arrow">▼</span>
+        </div>
+        <div class="stage-body">
+          <div class="danger-box">
+            <span class="box-label">⛔ Orientação do documento</span>
+            O uso de IA é <strong>fortemente desestimulado</strong> nessa etapa, exceto em casos específicos de acessibilidade para crianças com deficiência.
+          </div>
+          <p><strong>O que fazer em vez disso:</strong></p>
+          <ul class="law-list">
+            <li>Priorizar experiências "desplugadas" — brincar, explorar, interagir com pessoas e objetos concretos</li>
+            <li>Trabalhar padrões, sequências e relações lógicas de forma lúdica e corporal, sem intermediação de telas</li>
+            <li>Se houver uso de tecnologia, que seja supervisionado e pontual, nunca substituindo a interação humana</li>
+          </ul>
+          <div class="tip-box">
+            <span class="box-label">💡 Foco da etapa</span>
+            O desenvolvimento cognitivo, emocional e social da primeira infância depende de relações humanas ricas. A IA não deve ocupar esse espaço.
+          </div>
+        </div>
+      </div>
+
+      <!-- EF Anos Iniciais -->
+      <div class="stage-card" id="stage-ef1">
+        <div class="stage-header" onclick="toggleStage('stage-ef1')">
+          <div class="stage-header-left">
+            <span class="stage-icon">📗</span>
+            <div>
+              <div class="stage-name">Ensino Fundamental — Anos Iniciais</div>
+              <div class="stage-sub">1º ao 5º ano (6–10 anos)</div>
+            </div>
+          </div>
+          <span class="stage-arrow">▼</span>
+        </div>
+        <div class="stage-body">
+          <p><strong>Abordagem recomendada:</strong> introdução gradual, conceitual e lúdica à IA — ainda sem ferramentas de geração de conteúdo.</p>
+          <ul class="law-list">
+            <li>Desenvolvimento lúdico de sequências, algoritmos e pensamento computacional básico — preferencialmente desplugado</li>
+            <li>Introdução à ideia de que computadores seguem instruções criadas por pessoas</li>
+            <li>Primeiras discussões, em linguagem acessível, sobre o que é IA e como ela aprende com dados</li>
+            <li>Exploração de padrões e lógica em situações do cotidiano (receitas, jogos, rotinas)</li>
+          </ul>
+          <div class="warn-box">
+            <span class="box-label">⚠️ Atenção</span>
+            Ferramentas de IA generativa (como chatbots) <strong>não são recomendadas</strong> para essa faixa etária. O foco deve ser em compreensão conceitual, não em uso prático de ferramentas.
+          </div>
+        </div>
+      </div>
+
+      <!-- EF Anos Finais -->
+      <div class="stage-card" id="stage-ef2">
+        <div class="stage-header" onclick="toggleStage('stage-ef2')">
+          <div class="stage-header-left">
+            <span class="stage-icon">📘</span>
+            <div>
+              <div class="stage-name">Ensino Fundamental — Anos Finais</div>
+              <div class="stage-sub">6º ao 9º ano (11–14 anos)</div>
+            </div>
+          </div>
+          <span class="stage-arrow">▼</span>
+        </div>
+        <div class="stage-body">
+          <p><strong>Abordagem recomendada:</strong> consolidação do pensamento computacional, introdução às discussões éticas e exploração mais direta do que é IA.</p>
+          <ul class="law-list">
+            <li>Compreensão de como sistemas digitais funcionam e como algoritmos de IA são treinados com dados</li>
+            <li>Primeiras discussões introdutórias sobre ética, vieses algorítmicos e impacto social da IA</li>
+            <li>Uso supervisionado de ferramentas de IA com finalidade pedagógica clara e explicitada</li>
+            <li>Desenvolvimento da habilidade de avaliar criticamente resultados gerados por IA (identificar erros, limitações, preconceitos)</li>
+          </ul>
+          <div class="info-box">
+            <span class="box-label">📌 Competência central</span>
+            O estudante deve sair dessa etapa sendo capaz de <strong>questionar</strong> o que a IA produz — não apenas consumir. Isso inclui reconhecer quando uma resposta de IA está errada, parcial ou enviesada.
+          </div>
+        </div>
+      </div>
+
+      <!-- Ensino Médio -->
+      <div class="stage-card" id="stage-em">
+        <div class="stage-header" onclick="toggleStage('stage-em')">
+          <div class="stage-header-left">
+            <span class="stage-icon">📙</span>
+            <div>
+              <div class="stage-name">Ensino Médio</div>
+              <div class="stage-sub">1ª a 3ª série (15–17 anos)</div>
+            </div>
+          </div>
+          <span class="stage-arrow">▼</span>
+        </div>
+        <div class="stage-body">
+          <p><strong>Abordagem recomendada:</strong> aprofundamento crítico, exploração prática responsável e discussão de impactos sociais, econômicos e éticos da IA.</p>
+          <ul class="law-list">
+            <li>Análise crítica aprofundada de modelos algorítmicos: como são treinados, que dados usam, que decisões automatizam</li>
+            <li>Investigação guiada de casos reais de uso e abuso da IA — saúde, justiça, trabalho, comunicação</li>
+            <li>Resolução de problemas complexos usando IA como ferramenta auxiliar, com documentação do processo</li>
+            <li>Exploração prática de ferramentas de IA disponíveis, avaliando criticamente resultados e limitações</li>
+            <li>Discussão sobre impactos no mercado de trabalho, privacidade e democracia</li>
+            <li>Experimentação com criação de soluções simples que usam IA (não necessariamente programação)</li>
+          </ul>
+          <div class="tip-box">
+            <span class="box-label">💡 Competência esperada ao final</span>
+            O estudante que conclui o Ensino Médio deve ser um <strong>usuário crítico e responsável da IA</strong> — capaz de usá-la como ferramenta, compreender seus fundamentos, questionar seus impactos e contribuir para usos éticos e criativos na sociedade.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ RISCO -->
+    <section id="risco" class="section">
+      <div class="article-tag">🚦 Avaliação Tecnológica</div>
+      <h1>Classificação de Risco da IA</h1>
+      <p class="lead">Antes de adotar qualquer ferramenta de IA na escola, o documento do MEC — alinhado a padrões da UNESCO e OCDE e elaborado em conjunto com o CNE — recomenda que ela seja avaliada segundo quatro níveis de risco.</p>
+
+      <div class="info-box">
+        <span class="box-label">📌 Como usar esta classificação</span>
+        Aplique esta tabela antes de adotar qualquer ferramenta de IA na sua escola ou rede. Para ferramentas de <strong>Alto Risco</strong>, é necessária avaliação técnica especializada e consulta à secretaria de educação. Aplicações <strong>Proibidas</strong> não podem ser adotadas em hipótese alguma.
+      </div>
+
+      <h2>Tabela de Classificação</h2>
+      <table class="risk-table">
+        <thead>
+          <tr>
+            <th>Nível de Risco</th>
+            <th>O que significa</th>
+            <th>Exemplos de aplicações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-green">✅ Baixo Risco</span></td>
+            <td>Uso seguro para fins pedagógicos, com mínimo risco de dano ao estudante ou ao processo de aprendizagem.</td>
+            <td>
+              Ferramentas de organização de materiais didáticos<br>
+              Recursos de acessibilidade (leitores de tela com IA, audiodescrição)<br>
+              Suporte à escrita com revisão textual simples
+            </td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yellow">⚠️ Risco Moderado</span></td>
+            <td>Uso possível com supervisão docente ativa e avaliação pedagógica prévia. Requer atenção aos dados coletados.</td>
+            <td>
+              Tutores virtuais institucionais<br>
+              Assistentes acadêmicos integrados à plataforma da escola<br>
+              Sistemas de feedback automatizado para redações (com revisão docente)
+            </td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-red">⛔ Alto Risco</span></td>
+            <td>Uso requer avaliação técnica especializada, consulta à secretaria de educação e garantias contratuais de proteção de dados.</td>
+            <td>
+              Correção automática de provas com decisão final sem revisão humana<br>
+              Monitoramento biométrico durante avaliações<br>
+              Análise de perfil acadêmico para recomendações de percurso
+            </td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-black">🚫 Proibido</span></td>
+            <td>Aplicações que violam direitos fundamentais, a dignidade do estudante ou a legislação brasileira. <strong>Não podem ser adotadas em hipótese alguma.</strong></td>
+            <td>
+              Vigilância por detecção de emoções<br>
+              Sistemas de pontuação social de estudantes<br>
+              Análise psicológica para fins disciplinares<br>
+              Decisões automatizadas sobre aprovação, reprovação ou matrícula<br>
+              Uso de dados de estudantes para fins comerciais ou publicitários<br>
+              Reconhecimento facial para controle de presença de menores
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Aplicações Proibidas — Detalhe</h2>
+      <p>O documento é explícito: as aplicações abaixo <strong>nunca devem ser adotadas</strong> em escolas, independentemente da etapa de ensino, do nível de qualidade tecnológica da ferramenta ou de pressão comercial por parte de empresas:</p>
+
+      <ul class="prohib-list">
+        <li>Vigilância por detecção de emoções dos estudantes em sala de aula</li>
+        <li>Sistemas de pontuação social ou de comportamento baseados em IA</li>
+        <li>Análise psicológica automatizada para fins disciplinares</li>
+        <li>Decisões automatizadas sobre aprovação, reprovação ou matrícula de estudantes</li>
+        <li>Uso de dados pessoais de estudantes para fins comerciais, publicitários ou de perfilamento</li>
+        <li>Reconhecimento facial para controle de presença de crianças e adolescentes</li>
+      </ul>
+
+      <div class="danger-box">
+        <span class="box-label">🚫 Alerta</span>
+        Empresas que ofereçam ferramentas com essas características — mesmo embaladas em discurso de "inovação educacional" — estão oferecendo soluções incompatíveis com o marco legal brasileiro (LGPD + ECA Digital) e com as diretrizes do MEC. Recuse e denuncie à sua secretaria de educação.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ MARCO LEGAL -->
+    <section id="marco-legal" class="section">
+      <div class="article-tag">📜 Legislação</div>
+      <h1>Marco Legal</h1>
+      <p class="lead">O documento do MEC se insere em um conjunto de normas e referenciais que formam o arcabouço legal e curricular para o uso responsável da IA na escola brasileira.</p>
+
+      <h2>Legislação Brasileira</h2>
+
+      <div class="doc-box" data-label="§ LGPD — Lei nº 13.709/2018">
+        <p>Lei Geral de Proteção de Dados Pessoais. Regula a coleta, tratamento, armazenamento e compartilhamento de dados pessoais — incluindo dados de estudantes. Toda ferramenta de IA adotada na escola deve estar em conformidade com a LGPD.</p>
+      </div>
+
+      <div class="doc-box" data-label="§ ECA Digital — Lei nº 15.211/2025">
+        <p>Estatuto da Criança e do Adolescente Digital. Amplia as proteções do ECA para o ambiente digital, com regras específicas sobre privacidade, consentimento e proteção de crianças e adolescentes em plataformas digitais e aplicações de IA.</p>
+      </div>
+
+      <h2>Referenciais Curriculares</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Referencial</th>
+            <th>Relevância para a IA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>BNCC — Competência Geral 5</strong></td>
+            <td>Cultura Digital — base curricular para o ensino sobre e com tecnologias digitais, incluindo IA</td>
+          </tr>
+          <tr>
+            <td><strong>Resolução CNE/CEB 1/2022</strong></td>
+            <td>Normas para computação na Educação Básica — pensamento computacional como componente curricular</td>
+          </tr>
+          <tr>
+            <td><strong>Resolução CNE/CEB 2/2025</strong></td>
+            <td>Diretrizes para dispositivos digitais e integração curricular obrigatória da educação midiática e digital a partir de 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Lei nº 15.100/2025</strong></td>
+            <td>Restrição ao uso de celulares nas escolas — contexto regulatório para uso de dispositivos digitais</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Políticas e Estratégias Nacionais</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Política</th>
+            <th>Conteúdo relevante</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Escolas Conectadas (2023)</strong></td>
+            <td>Estratégia nacional com meta de acesso universal à internet nas escolas públicas até 2026</td>
+          </tr>
+          <tr>
+            <td><strong>PBIA 2024–2028</strong></td>
+            <td>Plano Brasileiro de Inteligência Artificial — inclui iniciativas educacionais e de formação para o uso ético da IA</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Referenciais Internacionais</h2>
+      <div class="card-grid">
+        <div class="card">
+          <span class="card-icon">🌐</span>
+          <div class="card-title">UNESCO</div>
+          <p>Referenciais de competências em IA para professores e estudantes — base para a formação docente proposta pelo documento.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📊</span>
+          <div class="card-title">OCDE</div>
+          <p>Padrões para classificação de risco de aplicações de IA em contextos educacionais e de serviços públicos.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🤖</span>
+          <div class="card-title">AI Act (UE)</div>
+          <p>Regulamento europeu de IA — referência internacional para critérios de segurança e risco que influenciam o documento do MEC.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ FORMAÇÃO -->
+    <section id="formacao" class="section">
+      <div class="article-tag">🎯 Para o Professor</div>
+      <h1>Formação Docente</h1>
+      <p class="lead">O documento reforça que nenhuma política de IA na escola funciona sem investimento real na formação dos professores. E que essa formação precisa partir do chão da escola, não de pacotes genéricos.</p>
+
+      <h2>Princípio central do documento</h2>
+      <div class="doc-box" data-label="§ Protagonismo docente">
+        <p>"O professor não é apenas um usuário de ferramentas de IA — ele é o responsável por avaliar, contextualizar e decidir sobre seu uso no processo de ensino e aprendizagem. Nenhuma ferramenta substitui o julgamento pedagógico qualificado."</p>
+      </div>
+
+      <h2>Curso disponível: Ensino Médio</h2>
+      <div class="course-box">
+        <div class="course-badge">Disponível agora · Gratuito</div>
+        <div class="course-title">IA na prática docente: uso ético, criativo e pedagógico — Ensino Médio</div>
+        <p>Curso lançado junto ao documento, na Plataforma AVAMEC (Mais Professores), em parceria com a UNESCO.</p>
+        <p><strong style="color:#f5a623;">5 módulos:</strong> Fundamentos conceituais · Aspectos técnicos · Implicações éticas · Aplicações pedagógicas · Experimentação prática</p>
+        <p>O certificado conta para progressão de carreira no setor público (mínimo de 20 dias de engajamento).</p>
+        <div class="course-meta">
+          <div class="course-meta-item">🎓 <strong>Plataforma:</strong> AVAMEC</div>
+          <div class="course-meta-item">💰 <strong>Custo:</strong> Gratuito</div>
+          <div class="course-meta-item">🏆 <strong>Certificado:</strong> Sim</div>
+          <div class="course-meta-item">🤝 <strong>Parceria:</strong> UNESCO</div>
+        </div>
+      </div>
+
+      <h2>Curso em breve: Ensino Fundamental</h2>
+      <div class="course-box" style="background: linear-gradient(135deg, #1a3a2a, #2a5a3a);">
+        <div class="course-badge" style="background: #10b981; color: #fff;">Previsto para junho/2026</div>
+        <div class="course-title">IA na prática docente: uso ético, criativo e pedagógico — Ensino Fundamental</div>
+        <p>Mesma estrutura e plataforma do curso de Ensino Médio, adaptado às especificidades do EF Anos Iniciais e Anos Finais.</p>
+        <div class="course-meta">
+          <div class="course-meta-item">🎓 <strong>Plataforma:</strong> AVAMEC</div>
+          <div class="course-meta-item">💰 <strong>Custo:</strong> Gratuito</div>
+          <div class="course-meta-item">📅 <strong>Previsão:</strong> Junho de 2026</div>
+        </div>
+      </div>
+
+      <h2>Suporte às Redes de Ensino</h2>
+      <p>O MEC disponibiliza assessoria técnica para redes municipais e estaduais que queiram implementar as diretrizes do documento, incluindo:</p>
+
+      <ul class="law-list">
+        <li>Apoio à atualização curricular para inclusão de conteúdos sobre IA</li>
+        <li>Formação presencial e remota de formadores de professores</li>
+        <li>Materiais didáticos abertos e adaptáveis por cada rede</li>
+        <li>Assessoria técnica para avaliação de ferramentas de IA antes da adoção</li>
+      </ul>
+
+      <div class="tip-box">
+        <span class="box-label">💡 O que o documento recomenda para a formação docente</span>
+        <ul class="law-list" style="margin-top: 10px;">
+          <li>Partir de um <strong>diagnóstico real</strong> das competências digitais dos professores da sua rede</li>
+          <li>Garantir <strong>espaço para experimentação pedagógica monitorada</strong> — não apenas apresentação teórica</li>
+          <li>Incluir <strong>discussão ética</strong> como eixo central da formação, não como apêndice</li>
+          <li>Reconhecer e sistematizar o <strong>conhecimento já existente</strong> dos professores sobre tecnologia</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ FAQ -->
+    <section id="faq" class="section">
+      <div class="article-tag">❓ Dúvidas Frequentes</div>
+      <h1>Perguntas Frequentes</h1>
+      <p class="lead">As dúvidas mais comuns de professores e gestores ao ler o documento do MEC sobre IA na Educação Básica.</p>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          O documento proíbe o uso de IA nas escolas?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          Não. O documento <strong>não proíbe</strong> o uso de IA — ao contrário, encoraja seu uso pedagógico intencional e responsável. O que ele faz é estabelecer princípios, diretrizes e uma classificação de risco para orientar quais usos são adequados, quais exigem cuidados e quais são inaceitáveis. A proibição recai apenas sobre aplicações específicas que violam direitos fundamentais (como reconhecimento facial de menores ou vigilância emocional).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Posso usar ChatGPT ou outras IAs com meus alunos?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          Depende da etapa e do contexto. O documento não cita ferramentas específicas, mas oferece critérios para avaliação. Para o Ensino Médio e Anos Finais do EF, o uso supervisionado de ferramentas de IA generativa é possível com finalidade pedagógica clara. Para os Anos Iniciais e, especialmente, para a Educação Infantil, o uso não é recomendado. Em qualquer caso, é essencial: (1) verificar os termos de uso da ferramenta quanto à coleta de dados de menores, (2) garantir supervisão docente ativa, e (3) incluir discussão crítica sobre a ferramenta com os estudantes.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          O documento tem força de lei? Sou obrigado a seguir?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          O documento em si é um <strong>referencial orientador</strong> — não uma lei. Porém, ele se fundamenta em normas que têm força legal: a LGPD (Lei 13.709/2018), o ECA Digital (Lei 15.211/2025) e a Resolução CNE/CEB 2/2025, que torna a educação digital e midiática obrigatória a partir de 2026. As diretrizes do documento, portanto, devem ser observadas — especialmente quanto à proteção de dados e às aplicações proibidas.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          O que é "descarregamento cognitivo" e por que devo evitá-lo?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          "Descarregamento cognitivo" é quando o estudante delega à IA tarefas que deveriam desenvolver seu próprio pensamento — como pedir que o ChatGPT escreva uma redação em vez de usar a ferramenta para revisar o que ele mesmo escreveu. O documento alerta que esse comportamento, quando sistemático, prejudica o desenvolvimento da criatividade, do raciocínio crítico e da autonomia intelectual dos estudantes. O uso de IA deve <em>apoiar</em> o pensamento, não substituí-lo.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          A escola pode adotar um sistema de reconhecimento facial para controle de presença?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <strong>Não.</strong> O documento classifica o reconhecimento facial para controle de presença de crianças e adolescentes como uma aplicação <strong>proibida</strong>. Além de estar nessa lista, esse tipo de sistema coleta dados biométricos de menores — o que é vedado pelo ECA Digital e pela LGPD sem consentimento informado e específico dos responsáveis. Independentemente do fornecedor ou da justificativa pedagógica apresentada, essa aplicação não é permitida.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Existe formação gratuita para professores sobre IA?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          Sim. O MEC lançou o curso <strong>"IA na prática docente: uso ético, criativo e pedagógico — Ensino Médio"</strong> na Plataforma AVAMEC (Mais Professores), em parceria com a UNESCO. O curso é gratuito, tem 5 módulos e o certificado conta para progressão de carreira no serviço público (mínimo de 20 dias de engajamento). Um curso equivalente para o Ensino Fundamental estava previsto para junho de 2026. Acesse a Plataforma AVAMEC pelo site do MEC.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Crianças da Educação Infantil podem usar IA?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          O documento desencoraja fortemente o uso de IA na Educação Infantil, exceto em casos específicos de acessibilidade para crianças com deficiência. O argumento é que o desenvolvimento cognitivo, emocional e social da primeira infância depende de interações humanas ricas e experiências concretas — e que a intermediação da IA nessa fase pode prejudicar esse desenvolvimento. A ênfase deve ser em experiências "desplugadas", lúdicas e relacionais.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Como saber se uma ferramenta de IA está em conformidade com a LGPD?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          Verifique os <strong>termos de uso e política de privacidade</strong> da ferramenta, especialmente: (1) que dados ela coleta dos usuários; (2) como esses dados são usados — especialmente se há uso para treinamento de modelos; (3) se há proteções específicas para dados de menores; (4) onde os dados são armazenados; (5) como solicitar a exclusão dos dados. Para ferramentas usadas com menores, é necessário consentimento informado dos responsáveis. Em caso de dúvida, consulte a secretaria de educação antes de adotar a ferramenta.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          O documento fala sobre IA e avaliação / correção de provas?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          Sim. A <strong>correção automática de provas com decisão final sem revisão humana</strong> é classificada como de <strong>Alto Risco</strong>. Isso significa que não pode ser adotada sem avaliação técnica especializada e garantias contratuais. Ferramentas que ofereçam <em>apoio</em> à correção — como identificar padrões de erro ou sugerir feedback — podem ser usadas, mas sempre com revisão e decisão final do professor. Decisões sobre aprovação ou reprovação nunca podem ser automatizadas.
+        </div>
+      </div>
+
+    </section>
+
+  </div><!-- /content -->
+</main><!-- /main -->
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+    event.currentTarget.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // close sidebar on mobile
+    if (window.innerWidth <= 768) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    item.classList.toggle('open');
+  }
+
+  function toggleStage(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  // Click outside sidebar on mobile closes it
+  document.addEventListener('click', function(e) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('menu-toggle');
+    if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+      if (!sidebar.contains(e.target) && e.target !== toggle) {
+        sidebar.classList.remove('open');
+      }
+    }
+  });
+</script>
+</body>
+</html>
